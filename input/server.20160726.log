@@ -1,0 +1,4 @@
+147.172.225.10 - 16401 [16/Sep/2013:23:52:35 +0100] "GET /KBDOC-00057.html HTTP/1.0" 200 11761 "http://www.newbie.com" "test F20L"
+147.172.225.10 - 16401 [16/Sep/2013:23:52:35 +0100] "GET /theme.css HTTP/1.0" 200 12353 "http://www.newbie.com" "test Mobile Browser Sorrento
+F20L"
+23.53.29.101 - 32693 [16/Sep/2013:23:49:50 +0100] "GET /KBDOC-00035.html HTTP/1.0" 200 9337 "http://www.newbie.com" "test Mobile Browser i3"
