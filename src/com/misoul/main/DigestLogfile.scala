@@ -1,4 +1,4 @@
-package com.misoul.main
+package com.misoul
 
 import scala.io.Source
 
