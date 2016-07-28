@@ -3,6 +3,7 @@ package com.misoul
 import io.Source
 import io.StdIn
 import scala.collection.Searching._
+import scala.language.postfixOps
 
 object ConsumeStdin {
 
@@ -59,11 +60,11 @@ object ConsumeStdin {
     // This solution doesn't always give correct answers
   }
 
-  def permutation[T](xs: List[T]): List[List[T]] = xs match {
+  def permutations[T](xs: List[T]): List[List[T]] = xs match {
     case List(_) => List(xs)
     case _ => for ( x <- xs
-                  ; val (l, r) = xs span { x!= }
-                  ; ys <- perms(l ++ r.tail)
+                  ; (l, r) = xs span { x!= }
+                  ; ys <- permutations(l ++ r.tail)
                   ) yield x :: ys
   }
 
@@ -73,7 +74,7 @@ object ConsumeStdin {
     (1 to count).foreach { i =>
       val numbers = StdIn.readLine.split(" ").map(_.toInt).to[List]
 
-      println(permutation[Int](numbers).mkString("\n"))
+      println(permutations[Int](numbers).mkString("\n"))
       println("------")
     }
   }
