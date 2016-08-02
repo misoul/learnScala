@@ -3,10 +3,43 @@ package com.misoul
 import java.util.concurrent.locks.{Lock, ReentrantLock, Condition}
 import scala.concurrent.duration._
 import scala.util.{Random, Failure, Success}
+// import scala.collection.mutable.{Array}
 
 
 object CareerCup {
 
+  /*
+  Given a array of integer and group size, reverse array by group size, example as follows:
+[1, 2, 3, 4, 5, 6], 1 -> [1, 2, 3, 4, 5, 6]
+[1, 2, 3, 4, 5, 6], 2 -> [2, 1, 4, 3, 6, 5]
+[1, 2, 3, 4, 5, 6], 3 -> [3, 2, 1, 6, 5, 4]
+[1, 2, 3, 4, 5, 6, 7, 8], 3 -> [3, 2, 1, 6, 5, 4, 8, 7]
+Design test cases for you API
+  */
+  def reverseArrayByGroup(v: Vector[Int], groupSize: Int): Vector[Int] = {
+    def min(a: Int, b: Int) = { if (a < b) a; else b; }
+
+    if (groupSize < 1) throw new IllegalArgumentException("groupSize cannot be zero")
+
+    val input = v.to[Array]
+    val length = input.length
+    (0 to length/groupSize) foreach { i =>
+      var begin = min(i * groupSize, length-1)
+      var end   = min(i * groupSize + groupSize - 1, length-1)
+
+      while (begin < length && end < length && begin < end) {
+        val temp = input(begin)
+        input(begin) = input(end)
+        input(end) = temp
+        begin += 1
+        end -= 1
+      }
+    }
+
+    input.to[Vector]
+
+    //TODO: do a Skiis version of this
+  }
 
   /*
   The first thread prints 1 1 1 …, the second one prints 2 2 2 …, and the
@@ -50,6 +83,6 @@ object CareerCup {
   }
 
   def main(args: Array[String]) = {
-    doFairWorkThreads()
+    println(reverseArrayByGroup(Vector(1,2,3,4,5,6,7,8), 3))
   }
 }
