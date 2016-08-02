@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APPNAME=ConsumeStdin
+APPNAME=CareerCup
 
-scalac -d target src/com/misoul/main/${APPNAME}.scala && \
-  scala -deprecation -cp ./target com.misoul.main.$APPNAME "$@"
+scalac -deprecation -d out src/main/scala/com/misoul/${APPNAME}.scala && \
+  scala -cp ./out com.misoul.$APPNAME "$@"
