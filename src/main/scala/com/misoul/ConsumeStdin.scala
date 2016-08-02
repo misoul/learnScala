@@ -60,6 +60,7 @@ object ConsumeStdin {
     // This solution doesn't always give correct answers
   }
 
+  // Also demonstrate Generic
   def permutations[T](xs: List[T]): List[List[T]] = xs match {
     case List(_) => List(xs)
     case _ => for ( x <- xs

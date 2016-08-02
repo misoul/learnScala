@@ -41,6 +41,39 @@ Design test cases for you API
     //TODO: do a Skiis version of this
   }
 
+  // Unbalanced binary search tree
+  class BinaryNode(val data: Int) {
+    private var _left : Option[BinaryNode] = None
+    private var _right: Option[BinaryNode] = None
+
+    def left = _left
+    def left_= (l: Option[BinaryNode]):Unit = _left = l // TODO: Setters??
+    def right = _right
+    def right_= (r: Option[BinaryNode]):Unit = _right = r
+
+
+    def add(newNode: BinaryNode): Unit = {
+      val newData = newNode.data
+
+      def addChild(child: Option[BinaryNode], assign: Option[BinaryNode]=>Unit) = {
+        if (child.isEmpty) assign(Option(newNode)) else child.get.add(newNode)
+      }
+      if (data > newData) addChild(left, left_=) else addChild(right, right_=)
+    }
+  }
+  object BinaryNode {
+    def apply(input: Vector[Int]): BinaryNode = {
+      if (input.length < 1) throw new IllegalArgumentException("Good input please")
+
+      val root = new BinaryNode(input(0))
+      (1 until input.length) foreach { data =>
+        root.add(new BinaryNode(input(data)))
+      }
+
+      root
+    }
+  }
+
   /*
   The first thread prints 1 1 1 …, the second one prints 2 2 2 …, and the
   third one prints 3 3 3 … endlessly. How do you schedule these three threads
@@ -83,6 +116,7 @@ Design test cases for you API
   }
 
   def main(args: Array[String]) = {
-    println(reverseArrayByGroup(Vector(1,2,3,4,5,6,7,8), 3))
+    // println(reverseArrayByGroup(Vector(1,2,3,4,5,6,7,8), 3))
+    val a = BinaryNode(Vector(4,1,1334,2,3,5))
   }
 }
