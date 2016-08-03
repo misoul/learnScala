@@ -21,7 +21,30 @@ class TestCareerCup extends Specification {
     "throws a proper exception upon invalid input" in {
       reverseArrayByGroup(Vector(1,2,3,4,5,6), 0) must throwA[IllegalArgumentException]
     }
-
   }
+
+  "spiralPrint2dArray" should {
+    "function properly for basic inputs" in {
+      spiralPrint2dArray(Array[Array[Int]](Array(1))) === "1"
+      spiralPrint2dArray(Array[Array[Int]](Array(1,2))) === "12"
+      spiralPrint2dArray(Array[Array[Int]](Array(1,2,3))) === "123"
+      spiralPrint2dArray(Array[Array[Int]](Array(1),Array(2))) === "12"
+      spiralPrint2dArray(Array[Array[Int]](Array(1),Array(2),Array(3))) === "123"
+      spiralPrint2dArray(Array[Array[Int]](Array(1,2),
+                                           Array(3,4))) === "1243"
+      spiralPrint2dArray(Array[Array[Int]](Array(1,2,5),
+                                           Array(3,4,6))) === "125643"
+      spiralPrint2dArray(Array[Array[Int]](Array(1,2,5),
+                                           Array(7,8,9),
+                                           Array(3,4,6))) === "125964378"
+      //TODO: size 3x4 4x3
+      spiralPrint2dArray(Array[Array[Int]](Array(1,2,5,10),
+                                           Array(7,8,9,11),
+                                           Array(3,4,6,12),
+                                           Array(13,14,15,16))) === "12510111216151413378964"
+    }
+  }
+
+
 
 }
