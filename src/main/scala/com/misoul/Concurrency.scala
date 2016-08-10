@@ -6,7 +6,7 @@ import scala.concurrent.{Future, Await, Promise}
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
+//This class should be rename 'Future', since this is not the only one way to do Concurrency
 object Concurrency {
 
   def return10 = 10

@@ -5,7 +5,7 @@ object Sort {
     def sort(a: Seq[T]): Seq[T]
   }
 
-  class BubbleSort[T <% Ordered[T]] extends Sorter[T] {
+  class BubbleSort[T <% Ordered[T]] extends Sorter[T] { // Generic
     override def sort(a: Seq[T]): Seq[T] = {
       // Do-able, but a bit silly
       return Seq.empty
@@ -24,7 +24,7 @@ object Sort {
 
   class MergeSort[T <% Ordered[T]] extends Sorter[T] {
     private def merge(a: Seq[T], b: Seq[T]): Seq[T] = {
-      (a ++ b) sorted // CHEATING but less important
+      (a ++ b).sorted // CHEATING but less important
                       // TODO: improve, see `scalac -feature src/com/misoul/main/*`
     }
 
@@ -43,7 +43,7 @@ object Sort {
   def main(args: Array[String]): Unit = {
     val qSort = new QuickSort[String]
     val mSort = new MergeSort[String]
-    val argsInt = args map(new String(_)) toSeq
+    val argsInt = args.map(new String(_)).toSeq
 
     println("Inputs of length[" + args.length + "]: " + args.toSeq.mkString(","))
 
