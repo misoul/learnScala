@@ -1,0 +1,12 @@
+Assumptions
+  1- Absolutely correct answer or a good enough answer.
+  2- Phone numbers' format are already validated to be in the normalized format: (xxx)-xxx-xxxx.
+  3-
+
+QUESTION
+  1- "Selecting the top users based on highest transaction amount for year 2015". From the expected output format, I think "Highest transaction amount" means "highest total transaction amount", instead of "a single highest transaction in a user's all transactions". Please confirm.
+  2- "contact users using phone numbers that are not in the donotcall list". Example: top user Tom has 2 numbers: (111)-111-1111 (in donotcall) and (222)-222-2222 (NOT in donocall). Tom should still show up in the top-1000 list. Please confirm.
+  3- If a user ends up in the top-1000 but doesn't have an "eligible" phone number, we will instead select the next best user with at least an eligible in the top user list.
+
+Feedback:
+  1- An example would be helpful.
