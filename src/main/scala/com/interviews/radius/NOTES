@@ -1,7 +1,10 @@
 Assumptions
   1- Absolutely correct answer or a good enough answer.
   2- Phone numbers' format are already validated to be in the normalized format: (xxx)-xxx-xxxx.
-  3-
+  3- Users.txt contains malformed lines. Decision: skip.
+
+DESIGN DECISIONS & ALTERNATIVES
+
 
 QUESTION
   1- "Selecting the top users based on highest transaction amount for year 2015". From the expected output format, I think "Highest transaction amount" means "highest total transaction amount", instead of "a single highest transaction in a user's all transactions". Please confirm.

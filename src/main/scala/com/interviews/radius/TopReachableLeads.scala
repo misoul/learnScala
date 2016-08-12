@@ -7,19 +7,13 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 
 
-object TopReachableLeads extends App {
-  import scala.io.Source
-  import org.apache.spark.rdd.{RDD, PairRDDFunctions}
-  import org.apache.spark.SparkContext
-  import org.apache.spark.SparkContext._
-  import org.apache.spark.SparkConf
-
+object TopReachableLeads {
   case class DoNotCall(phone: String) {
     override def toString = "[ " + phone + " ]"
   }
 
   // For this campaign, we are only interested whether the year is 2015 or not.
-  case class Transaction(userId: String, amount: Double, year: Int) { // TODO: fixme
+  case class Transaction(userId: String, amount: Double, year: Int) {
     override def toString = "[ " + userId + " , " + amount + " , " + year + " ]"
   }
 
@@ -37,44 +31,37 @@ object TopReachableLeads extends App {
 
   object User {
     def apply(str: String): User = {
-      val Array(id, name, emails, phones) = str.split(";", -1) // Use "-1" for no-phone, no-email cases
-      User(id, name, emails.split(",").to[Seq], phones.split(",").to[Seq])
+      try {
+        val Array(id, name, emails, phones) = str.split(";", -1) // Use "-1" for no-phone, no-email cases
+        User(id, name, emails.split(",").to[Seq], phones.split(",").to[Seq])
+      } catch {
+        case e: Exception => {
+          println("Bad input: userLine=" + str);
+          User("FAILED", "FAILED", Seq.empty, Seq.empty) // This won't show up in the resuilt
+        }
+      }
     }
   }
 
-  val conf = new SparkConf().setAppName("TopReachableLeads")
-  val sc = new SparkContext(conf)
+  case class ResultLine(id: String, name: String, phones: Seq[String], totalAmount: Double) {
+    override def toString = id + ";" + name + ";" + phones.mkString(",") + ";" + f"$totalAmount%1.2f"
+  }
 
-  val prefixPath = "./src/main/scala/com/interviews/radius/"
-  val donotcallFilename = prefixPath + "donotcall.txt"
-  val usersFilename = prefixPath + "users.txt"
-  val transactionsFilename = prefixPath + "transactions.txt"
-
-  // val dncSrc = sc.parallelize(sc.textFile(donotcallFilename).take(10))
-  // val usersSrc = sc.parallelize(sc.textFile(usersFilename).take(10))
-  // val transactionsSrc = sc.parallelize(sc.textFile(transactionsFilename).take(10))
-  val dncSrc = sc.textFile(donotcallFilename).take(10)
-  val usersSrc = sc.textFile(usersFilename).take(10)
-  val transactionsSrc = sc.textFile(transactionsFilename).take(10)
-
-  val transactions = transactionsSrc.map(Transaction(_))
-  val dnc = dncSrc map(DoNotCall(_))
-  val users = usersSrc map(User(_))
-
-  // Output: Customer ID, Customer name, reachable phone list , total transaction amount
+  // Output: (Customer ID, Customer name, reachable phone list , total transaction amount)
   def compute(users: RDD[User], donotcall: RDD[DoNotCall], transactions: RDD[Transaction],
-              nTop: Int = 1, targetYear: Int = 2015): String = {
+              noTargetUsers: Int = 1, targetYear: Int = 2015,
+              sc: SparkContext): Array[ResultLine] = {
     val heuristicMultiplier = 5
-    val heuristicTop = nTop * heuristicMultiplier //TOOD: FIXMEs
+    val heuristicTop = noTargetUsers * heuristicMultiplier
 
     // Calculate top spenders by 'total of their transactions'
-    val topSpenders = transactions
-      .filter(_.year == targetYear)             // Filter by year
+    val topSpendersArray = transactions
+      .filter(_.year == targetYear)
       .map { case t => (t.userId, t.amount) }
-      .reduceByKey(_+_)                         // Calculate total spending by user
+      .reduceByKey(_+_)
       .sortBy(_._2, false)
-
-    val bl = new PairRDDFunctions(topSpenders)
+      .take(heuristicTop)
+    val topSpenders = sc.parallelize(topSpendersArray)
 
     // Flatten & Filter out users without numbers
     val phoneToUser = users
@@ -92,11 +79,29 @@ object TopReachableLeads extends App {
     val topSpendersWithInfo = topSpenders
       .cogroup(reachableUsers)
       .collect { case (id, (amounts, users)) if (!amounts.isEmpty && !users.isEmpty) => (users.head, amounts.head) }
-      .map { case ((id, name, phones), amount) => (id, name, phones, amount)}
+      .map { case ((id, name, phones), amount) => ResultLine(id, name, phones, amount)}
 
-    topSpenders.foreach(println(_))
-    topSpendersWithInfo.foreach { println(_) }
+    topSpendersWithInfo.take(noTargetUsers).sortWith(_.totalAmount > _.totalAmount)
+  }
 
-    "blah"
+  def main(args: Array[String]): Unit = {
+    val conf = new SparkConf().setMaster("local")
+                              .setAppName("TopReachableLeads")
+    val sc = new SparkContext(conf)
+
+    val prefixPath = "./src/main/scala/com/interviews/radius/"
+    val donotcallFilename = prefixPath + "donotcall.txt"
+    val usersFilename = prefixPath + "users.txt"
+    val transactionsFilename = prefixPath + "transactions.txt"
+
+    val dncSrc = sc.textFile(donotcallFilename)
+    val usersSrc = sc.textFile(usersFilename)
+    val transactionsSrc = sc.textFile(transactionsFilename)
+
+    val transactions = transactionsSrc.map(Transaction(_))
+    val dnc = dncSrc map(DoNotCall(_))
+    val users = usersSrc map(User(_))
+
+    compute(users, dnc, transactions, sc=sc).foreach { println(_) }
   }
 }
