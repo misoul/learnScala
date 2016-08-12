@@ -6,6 +6,8 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 
+import java.io._
+
 
 object TopReachableLeads {
   case class DoNotCall(phone: String) {
@@ -29,6 +31,13 @@ object TopReachableLeads {
     override def toString = "[ " + id + " , " + name + " , " + phones.mkString("~") + " ]"
   }
 
+/*
+    2.1. Users.txt contains malformed lines (<15users); some cross checks show
+    that these users indeed have big transactions amount that might make them
+    end up in the top 1000 (a bit unrealistic since usually typos in VIP account
+    are quickly fixed). Since this is an exercise, these users are skipped and
+    logged.
+ */
   object User {
     def apply(str: String): User = {
       try {
@@ -102,6 +111,12 @@ object TopReachableLeads {
     val dnc = dncSrc map(DoNotCall(_))
     val users = usersSrc map(User(_))
 
-    compute(users, dnc, transactions, sc=sc).foreach { println(_) }
+    val result = compute(users, dnc, transactions, sc=sc)
+    result.foreach { println(_) }
+
+    val pw = new PrintWriter(new File("output.txt" ))
+    result.foreach { entry => pw.write(entry.toString + "\n") }
+    pw.close
+
   }
 }

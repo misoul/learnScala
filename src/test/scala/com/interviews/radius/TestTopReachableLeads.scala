@@ -5,6 +5,8 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 
+import java.io._
+
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
@@ -75,6 +77,10 @@ class TestTopReachableLeads extends Specification {
       val transactions = sc.parallelize(transactionsSrc.getLines.map(Transaction(_)).to[Seq])
 
       val result = compute(users, dncs, transactions, noTargetUsers=1000, sc=sc)
+
+      val pw = new PrintWriter(new File("output.txt" ))
+      result.foreach { entry => pw.write(entry.toString + "\n") }
+      pw.close
 
       donotcallSrc.close
       usersSrc.close
