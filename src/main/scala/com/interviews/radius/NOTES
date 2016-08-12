@@ -1,9 +1,25 @@
 Assumptions
-  1- Absolutely correct answer or a good enough answer.
-  2- Phone numbers' format are already validated to be in the normalized format: (xxx)-xxx-xxxx.
-  3- Users.txt contains malformed lines. Decision: skip.
+  1- Phone numbers' format are already validated to be in the normalized
+  format: (xxx)-xxx-xxxx.
+  2- Each line in "Users.txt" was assumed to be the following format:
+  "id;name;emails;phones", and emails/phones are comma separated lists.
+    2.1. Users.txt contains malformed lines (<15users); some cross checks
+    show that these users indeed have big transactions amount that might make
+    them end up in the top 1000 (a bit unrealistic since usually typos in VIP
+    accounts are quickly fixed). Since this is an exercise, these users are
+    skipped and logged.
 
 DESIGN DECISIONS & ALTERNATIVES
+  1- Solution is pretty straight forward: first eliminate phones in donotcall
+  list from users list, eliminate users with no phones, then join with top
+  spenders from transactions.txt to get the result.
+  2- A minor improvement was made in the last "join": instead of joining the
+  full spenders, we only take a small amount of top spenders (1000*5, aka "noTargetUsers * heuristicMultiplier" ) to join with the user info list.
+  This will dramatically reduce the amount of join carried out, and we still
+  get the 1000 top spenders we need.
+
+COMMANDS
+  1- Run: sbt test, and result is stored in "output.txt".
 
 
 QUESTION

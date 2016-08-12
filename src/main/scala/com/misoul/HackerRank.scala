@@ -1,7 +1,7 @@
 package com.misoul
 
-import io.Source
-import io.StdIn
+import scala.io.Source
+import scala.io.StdIn
 import scala.collection.Searching._
 import scala.language.postfixOps
 

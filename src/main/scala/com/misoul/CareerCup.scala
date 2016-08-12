@@ -82,7 +82,6 @@ Design test cases for you API
 
     def process(marker: String, data: Int): String = { println(marker + " " + data); data.toString }
     (0 to nRing) foreach { ring =>
-      println("Ring=" + ring)
       val rRow = nRow - ring
       val rCol = nCol - ring
       val cRow = nRow - 2*ring
