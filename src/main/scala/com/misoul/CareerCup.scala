@@ -102,6 +102,71 @@ Design test cases for you API
   }
 
   /*
+  Given an array of integers and the target as an input
+    E.g. input = {5,2,1,4,3,6,7,8} .. target : 333 it should true as
+    (5 +214 + 36 + 78) if the target does not match it should return false....
+    E.g. of false input : {5,5} target:60 ... It should return false as the
+    combinations possible are 5+5 = 10 and 55
+   */
+  def isSummable(a: Seq[Int], targetSum: Int): Boolean = {
+    // Solution: exhaustive search with early termination
+    // Search function: whether to insert a "number delimiter" between each pair or not.
+
+    def explore(sum: Int, index: Int, rightMost: String): Boolean = {
+      // Early termination
+      if (sum > targetSum) return false
+
+      if (index == a.length) {
+        if (sum + rightMost.toInt == targetSum) return true else return false
+      }
+
+      explore(sum + rightMost.toInt, index+1, a(index).toString) ||   // insert delimiter: YES
+        explore(sum, index+1, rightMost + a(index).toString)          // insert delimiter: NO
+      }
+
+    if (a.length == 1) return (a(0).toInt == targetSum)
+
+    explore(0, 1, a(0).toString)
+  }
+
+  /*
+    Given 2 strings, each of which contains exactly 1 '*' serving as a wild card
+    to match the 2 strings. Return the (shortest) matched string.
+
+    See tests for examples.
+   */
+  def resolveWildcards(a: String, b: String): String = {
+    if (a.length == 0 || b.length == 0) throw new IllegalArgumentException("Corner case. Skipped for now")
+
+    val NO_RESULT = "not-possible"
+
+    var i = 0;
+    while (i < a.length && i < b.length && a(i) != '*' && b(i) != '*' && a(i) == b(i)) i += 1
+
+    if (i >= a.length || i>= b.length) return NO_RESULT
+    if (a(i) != b(i)) {
+      if (a(i) != '*' && b(i) != '*') return NO_RESULT
+      else if (a(i) == '*') {
+        leftTrimmed(a.drop(i), b.drop(i))
+      } else leftTrimmed(b.drop(i), a.drop(i))
+    } else {
+      if (a(i) == '*') leftTrimmed(a.drop(i), b.drop(i))
+      else throw new IllegalArgumentException("UnreachableState") //TODO: return an appropriate Exception
+    }
+
+    def leftTrimmed(c: String, d: String): String = {
+      // This one is no fun to implement, too many 'ifs'
+      println(c + " v.s. " + d)
+      ""
+    }
+
+    var left = 0
+
+
+    ""
+  }
+
+  /*
   The first thread prints 1 1 1 …, the second one prints 2 2 2 …, and the
   third one prints 3 3 3 … endlessly. How do you schedule these three threads
   in order to print 1 2 3 1 2 3

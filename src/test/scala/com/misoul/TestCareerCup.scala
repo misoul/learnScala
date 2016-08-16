@@ -45,6 +45,31 @@ class TestCareerCup extends Specification {
     }
   }
 
+  "resolveWildcards" should {
+    "tests" in {
+      val NO_RESULT = "not-possible"
+      resolveWildcards("SOCIA*TWIST", "SOCIALTWI*T" ) // Expect: "SOCIALTWIST"
+      resolveWildcards("PROFESS*", "*PROFESS" ) // Expect: "PROFESS"
+      resolveWildcards("*EXAMPLETEST", "THIRDEXAMPLE*" ) // Expect:  "THIRDEXAMPLETEST"
+      resolveWildcards("*", "B*")  // Returns: "B"
+      resolveWildcards("*C", "D*") // Returns: "DC"
+      // resolveWildcards("*TELL", "*AFRIEND") === NO_RESULT
+      resolveWildcards("HELLO", "HI*") === NO_RESULT
+    }
+  }
+
+  "isSummable" should {
+    "tests" in {
+      isSummable(Seq(5), 0) === false
+      isSummable(Seq(5), 5) === true
+      isSummable(Seq(5,5), 55) === true
+      isSummable(Seq(5,5), 10) === true
+      isSummable(Seq(5,5), 1) === false
+      isSummable(Seq(5,5), 5) === false
+      isSummable(Seq(5,5), 50) === false
+      isSummable(Seq(5,2,1,4,3,6,7,8), 333) === true
+    }
+  }
 
 
 }
