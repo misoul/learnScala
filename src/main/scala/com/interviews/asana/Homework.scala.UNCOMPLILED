@@ -1,0 +1,56 @@
+package com.interviews.asana
+
+import java.util.concurrent.locks.{Lock, ReentrantLock, Condition}
+import scala.concurrent.duration._
+import scala.util.{Random, Failure, Success}
+
+///////
+// NOT REQUIRED TO COMPILE SO LEAVE IT AS IS
+///////
+
+object Homework extends App {
+
+  /*
+  Problem:
+    - Given a matrix of integers, and a rabbit starts eating at the center of
+    matrix and moves on the the adjacent cell, which is the biggest posive
+    adjacent cell among (up,down,left,right). If there's no adjacent cell,
+    rabbit goes to sleep.
+    - If there's no exact center of the matrix, rabbit picks the cell clostest
+    to center with the highest number.
+    - Write a function return the total number of carrots eaten.
+  */
+  def eatMatrix(matrix: Array[Array[Int]]): Int = {
+    var m = matrix.getMutableMatrix // so we can mark a cell as 0 after eating
+
+    if (m.length < 1 || m(0).length < 1) return 0;
+
+    val nRow = m.length
+    val nCol = m(0).length
+
+    private def isWithinMatrix(row: Int, col: Int) = (row >= 0 && row < nRow && col >=0 && col < nCol)
+    private def isOdd(n: Int) = (n % 2 == 1)
+
+    // A recursive function to return the total sum
+    private def eat(sum: Int, choices: Seq[(row,col)])): Int = {
+      val locationsWithValue: Seq[Int,(Int,Int)] = choices.flatMap {
+        case (row,col) if (m(row)(col) > 0 && isWithinMatrix(row,col)) => (m(row)(col), (row,col))
+        case _ => None
+      }
+
+      if (locationsWithValue.length == 0) return sum; // Rabbit goes to sleep
+      val (max, (maxRow, maxCol)) = locationsWithValue.getMax
+
+      eat(sum+max, Seq((maxRow+1, maxCol),(maxRow-1, maxCol),(maxRow, maxCol+1),(maxRow, maxCol-1)))
+    }
+
+    val startCells = match (nRow, ncol) {
+      case (x,y) if isOdd(x) && isOdd(y)   => Seq((x/2, y/2))
+      case (x,y) if isOdd(x) && !isOdd(y)  => Seq((x/2, y/2), (x/2, y/2+1))
+      case (x,y) if !isOdd(x) && isOdd(y)  => Seq((x/2, y/2), (x/2+1, y/2))
+      case (x,y) if !isOdd(x) && !isOdd(y) => Seq((x/2, y/2), (x/2, y/2+1)) ++ Seq((x/2, y/2), (x/2+1, y/2))
+    }
+
+    eat(0, startCells)
+  }
+}
