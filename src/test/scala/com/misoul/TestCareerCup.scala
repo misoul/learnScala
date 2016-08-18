@@ -71,5 +71,15 @@ class TestCareerCup extends Specification {
     }
   }
 
+  "findAllBoggles" should {
+    "tests" in {
+      findAllBoggles(Set("GEEKS", "FOR", "QUIZ", "GO", "K"),
+                    Seq(
+                      Seq('G','I','Z'),
+                      Seq('U','E','K'),
+                      Seq('Q','S','E')
+                    )) === Set("GEEKS", "QUIZ", "K")
+    }
+  }
 
 }

@@ -29,4 +29,4 @@ resolvers ++= Seq(
 // }
 
 // set the main class for 'sbt run'
-mainClass in (Compile, run) := Some("com.interviews.radius.TopReachableLeads")
+mainClass in (Compile, run) := Some("com.misoul.CareerCup")

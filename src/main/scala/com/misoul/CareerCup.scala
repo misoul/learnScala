@@ -14,7 +14,7 @@ object CareerCup {
 [1, 2, 3, 4, 5, 6], 2 -> [2, 1, 4, 3, 6, 5]
 [1, 2, 3, 4, 5, 6], 3 -> [3, 2, 1, 6, 5, 4]
 [1, 2, 3, 4, 5, 6, 7, 8], 3 -> [3, 2, 1, 6, 5, 4, 8, 7]
-Design test cases for you API
+  Design test cases for you API
   */
   def reverseArrayByGroup(v: Vector[Int], groupSize: Int): Vector[Int] = {
     if (groupSize < 1) throw new IllegalArgumentException("groupSize cannot be zero")
@@ -207,10 +207,87 @@ Design test cases for you API
     lock.unlock()
   }
 
+  /*
+    See problem description: http://stackoverflow.com/questions/746082/how-to-find-list-of-possible-words-from-a-letter-matrix-boggle-solver#746345
+   */
+  def findAllBoggles(dict: Set[String], matrix: Seq[Seq[Char]]): Set[String] = {
+    import scala.collection.mutable.Map
+
+    // This implementation def needs code cleanup
+
+    val results = scala.collection.mutable.Set[String]()
+    if (matrix.length == 0 || matrix(0).length == 0) throw new IllegalArgumentException("Bad Input")
+
+    val nRow = matrix.length
+    val nCol = matrix.length
+
+    def neighbors(row: Int, col: Int): Seq[(Int, Int)] = {
+      val offsets = Seq(-1, 0, 1)
+      val neighbors: Seq[(Int, Int)] = for (i <- offsets; j <- offsets) yield (row+i, col+j)
+
+      def isValid(location: (Int, Int)): Boolean = {
+        val (i, j) = location
+        i >= 0 && i < nRow && j >= 0 && j < nCol && (i != row || j != col)
+      }
+      neighbors.filter(isValid(_))
+    }
+
+    def explore(current: (Int,Int), locations: Seq[(Int, Int)], chars: String, node: TrieNode): Unit = {
+      // println("Exploring: " + matrix(current._1)(current._2) + " with " + chars)
+      if (dict.contains(chars)) {
+        // println("FOUND: " + chars + " - " + current + " - " + locations)
+        results.add(chars)
+      }
+
+      neighbors(current._1,current._2) foreach { location =>
+        val (i,j) = location
+        val nextChar = matrix(i)(j)
+        val nextNode = node.getPath(nextChar)
+        if (!locations.contains((i,j)) && nextNode.isDefined)
+          explore((i,j), locations++Seq((i,j)), chars+matrix(i)(j), nextNode.get)
+       }
+    }
+
+    case class TrieNode(char: Char, children: Map[Char,TrieNode] = Map()) {
+      var _isWord = false
+
+      def isWord = _isWord
+      def isWord_= (isWord: Boolean) = _isWord = isWord
+
+      def addPath(c: Char) = children.getOrElseUpdate(c, new TrieNode(c, Map[Char,TrieNode]()))
+      def hasPath(c: Char) = children.get(c).isDefined
+      def getPath(c: Char) = children.get(c)
+      def addWord(c: Char) = { val child = addPath(c); child.isWord = true; child }
+    }
+
+    def buildTree(node: TrieNode, dict: Set[String]) = {
+      dict.foreach { word =>
+        val lastNode = word.to[Array].foldLeft(node)((currNode,char) => currNode.addPath(char))
+        lastNode.isWord = true
+      }
+    }
+
+    // Create TrieMap from dictionary
+    val root = new TrieNode('-')
+    buildTree(root, dict)
+
+    val allCells = for (i <- 0 until nRow; j <- 0 until nCol) yield((i,j))
+    allCells.foreach { cell =>
+      val currChar = matrix(cell._1)(cell._2)
+      root.getPath(currChar).foreach{ explore(cell, Seq.empty, currChar.toString, _) }
+    }
+
+    results.to[Seq].to[Set]
+  }
+
   def main(args: Array[String]) = {
     // println(reverseArrayByGroup(Vector(1,2,3,4,5,6,7,8), 3))
-    val r = spiralPrint2dArray(Array[Array[Int]](Array(1,2,5),
-                                         Array(3,4,6)))
-    println(r)
+
+    println(findAllBoggles(Set("GEEKS", "FOR", "QUIZ", "GO", "K"),
+                  Seq(
+                    Seq('G','I','Z'),
+                    Seq('U','E','K'),
+                    Seq('Q','S','E')
+                  )))
   }
 }
