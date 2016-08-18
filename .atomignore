@@ -2,7 +2,9 @@
 tmp
 .idea
 .DS_Store
+.ensime
 
 out/
 target/
+metastore_db/
 *.iml
