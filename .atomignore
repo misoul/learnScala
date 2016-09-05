@@ -4,6 +4,7 @@ tmp
 .DS_Store
 .ensime
 
+.ensime_cache/
 out/
 target/
 metastore_db/
