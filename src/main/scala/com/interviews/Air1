@@ -1,0 +1,47 @@
+
+
+case class State(string: Seq[Char])
+
+object AirBnb1 {
+  def walk(initial: String) = {
+    //TODO: input check, numbers are valid
+
+    val initialState = State(initial)
+    val endState = State(initial.sort)
+    val queue = new Queue[State]()
+    val visited = new Set[State]()
+    var found = false
+    val emptyMarker = '_'
+    val dimension = Math.sqrt(intial.lengh)
+    val (maxRow, maxCol) = (dimension - 1, dimesion - 1)
+
+    queue.enqueue(initialState)
+    visited.add(initialState)
+
+    while (!found && queue.notEmpty) {
+      val currState = queue.dequeue()
+
+      val nextStates = getNextStates(currState) // will elim visited states
+      if (nextStates.contains(endState)) {
+        found = true
+        // eraly termination .e.g return true
+      }
+
+      queue ++ nextStates
+    }
+
+    def getNextStates(state: State): Seq[State] = {
+      val offsets = Seq((0,-1), (-1, 0), (0, 1), (1,0))
+      val empty = state.string.findIndex(emptyMarker)
+      val (x,y) = to2Dim(empty)
+
+      offsets.map { (i,j) => (x+i, y+j)}. filter(isValid(_)) //TODO: filter by visited.notContain
+
+      def isValid((x,y): (Int, Int)) = (x >= 0 && y >= 0 && x <= maxRow && y <= maxCol)
+    }
+
+    def to2Dim(index: Int) = (index )
+  }
+
+
+}

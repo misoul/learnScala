@@ -1,0 +1,44 @@
+
+
+/*
+
+ */
+
+object Air2 {
+  type Pair = (Int, Int)
+
+  def findSubProblem(start: Int, intervals: Seq[Pair]): (nextStart: Int, result: Option[Pair]) = {
+    val sorted = intervals.sort((a, b) => a._0 < b._0)
+    var nextBound = start
+
+    intervals.foreach { interval =>
+      if (nextBound < interval._0) return (0, Some(nextBound, interval._0))
+
+      nextBound = Math.max(interval._1, nextBound)
+    }
+
+    (nextBound, None)
+  }
+
+  def findInterval(input: Seq[Seq[Pair]], start: Int, end: Int): Pair = {
+    val initialStart = start
+
+    var found = false
+    val currSet = input.foreach(person => person(0))
+    val nextInput = input.foreach(person => person.drop(1))
+
+    iterate(currSet, nextInput, initialStart)
+
+    def iterate(currSet: Seq[Pair], input: Seq[Seq[Pair]], start: Int) = {
+      val (nextStart, result) = findSubProblem(start, currSet)
+
+      if (result.nonEmpty) {
+        return result.get
+      }
+
+      iterate(input.foreach(person => person(0)),
+              input.foreach(person => person.drop(1)),
+              nextStart)
+    }
+  }
+}
