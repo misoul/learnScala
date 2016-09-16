@@ -1,6 +1,8 @@
+package com.interviews
+
+// Display Unique Hosts on Pages
 object Solution extends App {
-  import scala.collection.mutable.Queue
-  import scala.collection.mutable.Set
+  import scala.collection.mutable.{Queue, Set}
 
 
   // for (i <- 0 until 5) println("Hello, world!")

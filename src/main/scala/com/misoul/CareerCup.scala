@@ -1,6 +1,7 @@
 package com.misoul
 
 import java.util.concurrent.locks.{Lock, ReentrantLock, Condition}
+import scala.annotation.tailrec
 import scala.concurrent.duration._
 import scala.util.{Random, Failure, Success}
 // import scala.collection.mutable.{Array}
@@ -280,14 +281,42 @@ object CareerCup {
     results.to[Seq].to[Set]
   }
 
+  def countOccurances(base: String, pattern: String) = {
+    def iter(s1: String, count: Int): Int = {
+      if (s1.isEmpty) return count
+
+      s1.indexOfSlice(pattern) match {
+        case -1 => count
+        case i  => iter(s1.drop(i + pattern.length), count+1)
+      }
+    }
+
+    iter(base, 0)
+  }
+
+  def countSubstring(str1:String, str2:String):Int={
+    @tailrec def count(pos:Int, c:Int):Int={
+      val idx=str1 indexOf(str2, pos)
+      if(idx == -1) c else count(idx+str2.size, c+1)
+    }
+    count(0,0)
+  }
+
+  def findPrime(n: Int): Array[Int] = {
+    def isPrime(i: Int, primes: Array[Int]) = !primes.exists(i % _ == 0)
+
+    def iter(curr: Int, primes: Array[Int]): Array[Int] = {
+      if (curr > n) return primes
+
+      if (isPrime(curr, primes)) iter(curr+2, primes++Array(curr)) else iter(curr+2, primes)
+    }
+
+    iter(3, Array(2))
+  }
+
   def main(args: Array[String]) = {
     // println(reverseArrayByGroup(Vector(1,2,3,4,5,6,7,8), 3))
 
-    println(findAllBoggles(Set("GEEKS", "FOR", "QUIZ", "GO", "K"),
-                  Seq(
-                    Seq('G','I','Z'),
-                    Seq('U','E','K'),
-                    Seq('Q','S','E')
-                  )))
+    println(countOccurances("ab 1ab 2ab 3ab a", "ab"))
   }
 }
