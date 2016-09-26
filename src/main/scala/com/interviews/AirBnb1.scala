@@ -93,3 +93,69 @@ object ShuffleTile extends App {
   println("Target : " + State.target)
   println("REACHABLE: " + explore(Queue(state1), Set.empty))
 }
+
+/* 2nd try of this: within 45min
+
+object Try extends App {
+  type Pair = (Int, Int)
+
+  case class Board(array: Vector[Vector[Int]], empty: Pair) {
+    override def toString = array.map(row => row.mkString("")).mkString(".") + "##" + empty
+    override def hashCode = toString.hashCode()
+    override def equals(o: Any) = (o.isInstanceOf[Board] && toString.equals(o.toString))
+
+    def nRows = array.length
+    def nCols = array(0).length
+
+    def isValidCoord(p: Pair): Boolean = isValidCoord(p._1, p._2)
+    def isValidCoord(x: Int, y: Int): Boolean = 0 <= x && x < nRows && 0 <= y && y < nCols
+    def swap(array: Vector[Vector[Int]], empty: Pair, newEmpty: Pair):Board = {
+      val a = array.map(r => r.toArray)
+
+      val temp = a(empty._1)(empty._2)
+      a(empty._1)(empty._2) = a(newEmpty._1)(newEmpty._2)
+      a(newEmpty._1)(newEmpty._2) = temp
+
+      Board(a.map(r => r.toVector), newEmpty)
+    }
+
+    def getNeighbors(): Seq[Board] = {
+      val offsets = Seq((0, -1), (-1, 0), (0, 1), (1, 0))
+
+      offsets.map(i => (empty._1 + i._1, empty._2 + i._2))
+          .filter(isValidCoord(_))
+          .map(i => this.swap(array, empty, i))
+    }
+  }
+  object Board {
+    def targetBoard(nRows: Int, nCols: Int) = // Assuming "0" is the empty slot, starting at (0,0)
+      Board((0 until nRows).map (i => {0 until nCols}.map(j => i*nCols + j).toVector).toVector, (0,0))
+  }
+
+  def walk(start: Vector[Vector[Int]]): Boolean = { // Assumption: board is correctly formatted
+    def nRows = start.length
+    def nCols = start(0).length
+    def targetBoard = Board.targetBoard(nRows, nCols)
+
+    def explore(queue: Queue[Board], visited: Set[Board]): Boolean = {
+      if (queue.isEmpty) return false
+
+      val (curr, nextQueue) = queue.dequeue
+      if (curr.equals(targetBoard)) return true
+
+      explore(nextQueue ++ curr.getNeighbors.filter(!visited.contains(_)),
+              visited ++ Set(curr))
+    }
+
+    explore(Queue(Board(start, (1,1))), Set.empty[Board]) // TODO: replace hardcode(0,1) with a findEmptySlot()
+  }
+
+  val startArray = Vector(Vector(1,3), Vector(2,0))
+
+  println("targetBoard: " + Board.targetBoard(startArray.length, startArray(0).length))
+  println("REACHABLE: " + walk(startArray))
+
+}
+
+
+ */

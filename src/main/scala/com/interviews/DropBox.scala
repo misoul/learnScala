@@ -1,5 +1,7 @@
 package com.interviews
 
+// Source: DropBox phone screen
+
 case class Bucket(start: Long, count: Long)
 
 case class URL(nWindows: Int) { // Each window is of 1s length each
@@ -52,3 +54,45 @@ object DropBox extends App {
 
   println(url.countHits())
 }
+
+/* 2nd try of coding, within 15min
+
+case class URL(nBuckets: Int) {
+  case class Bucket(start: Long, count: Long)
+
+  val _buckets: Array[Option[Bucket]] = (1 to nBuckets).map (i => None).toArray
+  var _index = -1
+  val _windowLength = 1000 //milisec
+
+  var _currentStart = System.currentTimeMillis()
+  var _currentCount = 0
+
+  private def saveCurrentBucket(now: Long) = {
+    if (now > _currentStart + _windowLength) {
+      _index += 1
+      _buckets(_index) = Some(Bucket(_currentStart, _currentStart))
+
+      _currentStart = now
+      _currentCount = 0
+    }
+  }
+
+  def logHit(): Unit = {
+    val now = System.currentTimeMillis()
+
+    saveCurrentBucket(now)
+    _currentCount += 1
+  }
+
+  def countHits(): Long = {
+    def count(time: Long): Long = {
+      _buckets.flatMap(_.filter(_.start > time)).map(_.count).sum
+    }
+
+    saveCurrentBucket(System.currentTimeMillis())
+    count(System.currentTimeMillis - nBuckets*_windowLength) + _currentCount
+  }
+}
+
+
+ */

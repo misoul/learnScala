@@ -7,7 +7,7 @@ object MaxMatch extends App {
   def parseName(name: String): (Int, Int, Int) = { // (nVowels, nConsonants, nNumbers)
     val vowels = "aeiouy"
     val consonants = "bcdfghjklmnpqrstvwxz"
-    val numbers = "" //0123456789" // This is here because I'm not sure "letters" include "numbers"
+    val numbers = "" //0123456789" // This is here because I was not sure "letters" include "numbers"
     val vowelSet = (vowels + vowels.toUpperCase).toSet
     val consonantSet = (consonants + consonants.toUpperCase).toSet
     val numberSet = numbers.toSet
@@ -19,6 +19,8 @@ object MaxMatch extends App {
 
   def computeScore(person: String, product: String): Double = {
     def isEven(n: Int) = (n % 2 == 0)
+
+    if (person.isEmpty || product.isEmpty) return 0 // Used for padding cases: #products != #persons
 
     val (eVowels, eConsonants, eNumber) = parseName(person)   // person
     val (oVowels, oConsonants, oNumber) = parseName(product)  // product
@@ -37,14 +39,15 @@ object MaxMatch extends App {
     val persons = personsStr.split(",")
     val products = productsStr.split(",")
 
-    (persons, products)
+    val diff = persons.length - products.length
+    val padding = (1 to diff).map(i=>"").toArray
+
+    if (diff > 0) (persons, products ++ padding) else (persons ++ padding, products)
   }
 
   def scoreMatrix(persons: Array[String], products: Array[String]): Array[Array[Double]] = {
     persons.map { person =>
       products.map { product =>
-        println(person + " " + parseName(person) + " ~~ " + product + " " + parseName(product) + " = " + computeScore(person, product))
-
         computeScore(person, product)
       }
     }
@@ -53,12 +56,6 @@ object MaxMatch extends App {
   def computeMaxMatch(line: String): Double = {
     val (people, products) = parseLine(line)
     val matrix = scoreMatrix(people, products)
-
-    println(people.mkString("\n"))
-    println("==")
-    println(products.mkString("\n"))
-    println("==")
-    printMatrix(matrix)
 
     hgAlgorithm(matrix, "max")
   }
@@ -69,12 +66,9 @@ object MaxMatch extends App {
     m.foreach { row => println(row.mkString(",") + "\n") }
   }
 
-  val line1 = "Jack Abraham,John Evans,Ted Dziuba;iPad 2 - 4-pack,Girl Scouts Thin Mints,Nerf Crossbow"
-  val line2 = "Jeffery Lebowski,Walter Sobchak,Theodore Donald Kerabatsos,Peter Gibbons,Michael Bolton,Samir Nagheenanajar;Half & Half,Colt M1911A1,16lb bowling ball,Red Swingline Stapler,Printer paper,Vibe Magazine Subscriptions - 40 pack"
-  val line3 = "Jareau Wade,Mahmoud Abdelkader,Wenyi Cai,Justin Van Winkle,Gabriel Sinkin,Aaron Adelson;Batman No. 1,Football - Official Size,Bass Amplifying Headphones,Elephant food - 1024 lbs,Three Wolf One Moon T-shirt,Dom Perignon 2000 Vintage"
-  val line4 = "Jareau Wade,Rob Eroh,Mahmoud Abdelkader,Wenyi Cai,Justin Van Winkle,Gabriel Sinkin,Aaron Adelson;Batman No. 1,Football - Official Size,Bass Amplifying Headphones,Elephant food - 1024 lbs,Three Wolf One Moon T-shirt,Dom Perignon 2000 Vintage"
-  println(computeMaxMatchStr(line4))
 
+  val inputFile = "/Users/vto/Downloads/zenreach.in"
+  for (line <- Source.fromFile(inputFile).getLines()) println(computeMaxMatchStr(line))
 }
 
 /*
