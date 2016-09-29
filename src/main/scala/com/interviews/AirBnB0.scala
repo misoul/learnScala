@@ -1,7 +1,7 @@
 package com.interviews
 
 // Display Unique Hosts on Pages
-object Solution extends App {
+object AirBnB0 extends App {
   import scala.collection.mutable.{Queue, Set}
 
 

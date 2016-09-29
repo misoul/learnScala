@@ -8,7 +8,7 @@ import org.specs2.runner.JUnitRunner
 class TestDropBox extends Specification {
   import DropBox._
 
-  "DropBox" should {
+  "URL.countHits" should {
     "functions for corner cases" in {
       val url = new URL(3)
       url.countHits() === 0
@@ -45,5 +45,21 @@ class TestDropBox extends Specification {
       url.countHits() === 1
     }
 
+    "functions for more complicated cases" in {
+      val url = new URL(5)
+
+      (1 to 100).foreach { i =>
+        Thread.sleep(30)
+        (1 to i).foreach { j => url.logHit() }
+      }
+      url.countHits() === 100 * 101 / 2
+
+
+      (1 to 100).foreach { i =>
+        Thread.sleep(30)
+        (1 to i).foreach { j => url.logHit() }
+      }
+      url.countHits() < 100 * 101
+    }
   }
 }
